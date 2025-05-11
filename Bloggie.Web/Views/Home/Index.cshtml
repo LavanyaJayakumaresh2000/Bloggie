@@ -1,0 +1,83 @@
+﻿@model Bloggie.Web.Models.ViewModel.HomeViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container col-xxl-8 px-4 py-5">
+    <div class="row align-items-center g-5 py-5">
+        <div class="col-12 col-lg-6">
+            <h1 class="lh-1 fw-bold display-5 mb-3">Learn Something New Every Day: Tiny Steps Toward Big Dreams</h1>
+            <p class="lead">
+                Welcome to a journey of lifelong learning!
+                Every tiny step you take today brings you closer to the bigger dreams of tomorrow. This blog is a collection of simple lessons, inspiring thoughts, and easy practices to help you grow — one day at a time. Let’s explore new ideas, learn new skills, and stay curious together.
+            </p>
+        </div>
+        <div class="col-12 col-lg-6">
+            <img class=" d-block mx-lg-auto img-fluid " width="300" src="https://res.cloudinary.com/djvvvjnhv/image/upload/v1745736983/d1hmqnagwuj48e6cj9ym.jpg" alt="Learn Something New Every Day" />
+
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+    <div class="row justify-content-center mb-4">
+        <div class="col-6">
+            @if(Model != null && Model.Tags.Any())
+            {
+                @foreach(var tag in Model.Tags)
+                {
+                    <span class="badge bg-secondary me-1">@tag.Name</span>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container ">
+    <div class=" row justify-content-center ">
+    <div class=" col-6 ">
+        @if(Model != null && Model.BlogPosts.Any())
+        {
+            @foreach (var blogPost in Model.BlogPosts)
+            {
+                <div class="mb-5 bg-light box-shadow p-5">
+                    <div class="mb-4">
+                        <img src="@blogPost.FeaturedImageUrl"  alt="@blogPost.Heading" 
+                        class="d-block img-fluid mb-2" />
+                    </div>
+                <div class="mb-4">
+                    <h1>@blogPost.Heading</h1>
+                </div>
+
+                <div class="mb-4 ">
+                    <p>Author :@blogPost.Author
+                        <br/>
+                    Published Date :@blogPost.PublishedDate.ToShortDateString()</p>
+                </div>
+                <div class="mb-4 ">
+                    @foreach (var tag in blogPost.Tags)
+                    {
+                        <span class="badge bg-secondary me-2">@tag.DisplayName</span>
+                    }
+                </div>
+                <div class="mb-4">
+                    <p>@blogPost.ShortDescription</p>
+                </div>
+                <div class="mb-4">
+                    <a class="btn btn-dark" 
+                    asp-area="" 
+                    asp-controller="Blogs"
+                    asp-action="Index"
+                    asp-route-urlHandle="@blogPost.UrlHandle">Read More</a>
+                </div>
+                    </div>
+            }
+        }
+        
+    </div>
+    </div>
+</div>
