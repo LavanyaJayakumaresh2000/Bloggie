@@ -4,6 +4,7 @@ using Bloggie.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bloggie.Web.Migrations
 {
     [DbContext(typeof(BloggieDbcontext))]
-    partial class bloggieDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20250512175911_Added Comments")]
+    partial class AddedComments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,9 +94,6 @@ namespace Bloggie.Web.Migrations
                     b.Property<Guid>("BlogPostId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -164,7 +164,7 @@ namespace Bloggie.Web.Migrations
             modelBuilder.Entity("Bloggie.Web.Models.Domain.BlogPostComment", b =>
                 {
                     b.HasOne("Bloggie.Web.Models.Domain.BlogPost", null)
-                        .WithMany("PostComments")
+                        .WithMany("BlogPostComments")
                         .HasForeignKey("BlogPostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -181,7 +181,7 @@ namespace Bloggie.Web.Migrations
 
             modelBuilder.Entity("Bloggie.Web.Models.Domain.BlogPost", b =>
                 {
-                    b.Navigation("PostComments");
+                    b.Navigation("BlogPostComments");
 
                     b.Navigation("PostLikes");
                 });

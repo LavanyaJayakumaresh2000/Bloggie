@@ -19,6 +19,12 @@ namespace Bloggie.Web.Repositories
             return blogPost;
         }
 
+        public async Task<int> CountAsync()
+        {
+            var blog = await bloggieDbcontext.BlogPosts.Include(x=>x.Tags).ToListAsync();
+            return blog.Count;
+        }
+
         public async Task<BlogPost?> DeleteAsync(Guid id)
         {
             var blog = await bloggieDbcontext.BlogPosts.Include(x => x.Tags).FirstOrDefaultAsync(x => x.Id == id);
@@ -31,9 +37,34 @@ namespace Bloggie.Web.Repositories
             return null;
         }
 
-        public async Task<IEnumerable<BlogPost>> GetAllAsync()
+        public async Task<IEnumerable<BlogPost>> GetAllAsync(string? searchQuery,string? sortBy, string? sortingField,
+            int pageNumber = 1, int pageSize = 3)
         {
-             return await bloggieDbcontext.BlogPosts.Include(x=> x.Tags).ToListAsync();
+            var blogs = await bloggieDbcontext.BlogPosts.Include(x=>x.Tags).ToListAsync();
+            var search = blogs.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                search = search.Where(x => x.Heading.Contains(searchQuery));
+            }
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                var isDesc = string.Equals(sortBy, "desc", StringComparison.OrdinalIgnoreCase);
+
+                if(string.Equals(sortingField, "Heading", StringComparison.OrdinalIgnoreCase))
+                {
+                    search = isDesc ? search.OrderByDescending(x=>x.Heading) : search.OrderBy(x=>x.Heading);
+                }
+                if (string.Equals(sortingField, "Heading", StringComparison.OrdinalIgnoreCase))
+                {
+                    search = isDesc ? search.OrderByDescending(x=>x.Heading) : search.OrderBy(x=>x.Heading);
+                }
+            }
+
+            search = search.Skip((pageNumber -  1)* pageSize).Take(pageSize);
+            blogs = search.ToList();
+
+            return blogs;
             
         }
 

@@ -28,6 +28,11 @@ namespace Bloggie.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(AddTagsRequest addTagsRequest)
         {
+            ValidateAddTagRequest(addTagsRequest);
+            if(ModelState.IsValid == false)
+            {
+                return View();
+            }
             var tag = new Tag
             {
                 Name = addTagsRequest.Name,
@@ -39,9 +44,29 @@ namespace Bloggie.Web.Controllers
 
         [HttpGet]
         [ActionName("List")]
-        public async Task<IActionResult> List()
+        public async Task<IActionResult> List(string searchQuery, string sortBy, string sortingField,
+            int pagenumber = 1,int pageSize = 3)
         {
-            var tags = await tagRepository.GetAllAsync();
+            var totalCountOfTags = await tagRepository.CountAsync();
+
+            var tags = await tagRepository.GetAllAsync(searchQuery, sortBy,sortingField,pagenumber,pageSize);
+            var totalPage = Math.Ceiling((double)totalCountOfTags / pageSize);
+
+            if(pagenumber > totalPage)
+            {
+                pagenumber--;
+            }
+            if(pagenumber < 1)
+            {
+                pagenumber++;
+            }
+            ViewBag.TotalPage = totalPage;
+            ViewBag.PageNumber = pagenumber;
+            ViewBag.PageSize = pageSize;
+            ViewBag.SearchQuery = searchQuery;
+            ViewBag.SortBy = sortBy;
+            ViewBag.SortingField = sortingField;
+
             return View(tags);
         }
 
@@ -117,5 +142,18 @@ namespace Bloggie.Web.Controllers
 
             return RedirectToAction("List");
         }
+
+        private void ValidateAddTagRequest(AddTagsRequest addTagsRequest)
+        {
+            if (addTagsRequest.Name is not null && addTagsRequest.DisplayName is not null)
+            {
+                if (addTagsRequest.Name == addTagsRequest.DisplayName)
+                {
+                    ModelState.AddModelError("DisplayName", "Name and DisplayName should not be same");
+                }
+            }
+            
+        }
+        
     }
 }

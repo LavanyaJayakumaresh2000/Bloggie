@@ -1,0 +1,210 @@
+﻿@model Bloggie.Web.Models.ViewModel.UserRequest
+
+@{
+    var previous = Model.PageNumber - 1;
+    var next = Model.PageNumber + 1;
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h1>List All Users - Admin functionality</h1>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div>
+    <form method="get" id="searchForm">
+        <div class="container my-3">
+            <div class=" row justify-content-between">
+                <div class="col-md-3 d-flex">
+                    <input class="form-control me-3" type="text" name="searchQuery" value=@Model.SearchQuery id="searchInput"/>
+                    <button class="btn btn-warning" type="submit" id="searchButton">Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="container my-3">
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#ModelForNewUser">
+                Create User
+            </button>
+        </div>
+
+        @if(Model is not null && Model.GetUsers.Any())
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th> UserName
+                            <span>
+                                <span>
+                                    <a class="btn btn-light"
+                                    asp-controller="User" asp-action="List"
+                                    asp-route-searchQuery="@Model.SearchQuery"
+                                    asp-route-sortBy=Asc
+                                    asp-route-sortingField=UserName>
+
+                                        <i class="bi bi-arrow-up"></i>
+                                    </a>
+                                </span> 
+                                <span>
+                                    <a class="btn btn-light"
+                                    asp-controller="User" asp-action="List"
+                                    asp-route-searchQuery="@Model.SearchQuery"
+                                    asp-route-sortBy=Desc
+                                    asp-route-sortingField=UserName>
+
+                                        <i class="bi bi-arrow-down"></i>
+                                    </a>
+                                </span>
+                            </span>
+                        </th>
+                        <th> Email
+                            <span>
+                                <span>
+                                    <a class="btn btn-light"
+                                    asp-controller="User" asp-action="List"
+                                    asp-route-searchQuery="@Model.SearchQuery"
+                                    asp-route-sortBy=Asc
+                                    asp-route-sortingField=Email>
+
+                                        <i class="bi bi-arrow-up"></i>
+                                    </a>
+                                </span>
+                                <span>
+                                    <a class="btn btn-light"
+                                    asp-controller="User" asp-action="List"
+                                    asp-route-searchQuery="@Model.SearchQuery"
+                                    asp-route-sortBy=Desc
+                                    asp-route-sortingField=Email>
+
+                                        <i class="bi bi-arrow-down"></i>
+                                    </a>
+                                </span>
+                            </span>
+                        </th>
+                        <th> </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.GetUsers)
+                    {
+                        <tr>
+                            <td>@user.Id</td>
+                            <td>@user.UserName</td>
+                            <td>@user.Email</td>
+                            <td>
+                                <form method="post" asp-controller="User"
+                                asp-action="Remove"
+                                asp-route-id="@user.Id">
+                                    <button class="btn btn-danger" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="container mb-3">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <a class="page-link" asp-controller="User"
+                               asp-action="List" asp-route-pageNumber="@previous" asp-route-pageSize="@Model.PageSize">Previous</a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.TotalCount; i++)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-controller="User"
+                                   asp-action="List" asp-route-pageNumber="@i" asp-route-pageSize="@Model.PageSize">@i</a>
+                            </li>
+                        }
+
+
+                        <li class="page-item">
+                            <a class="page-link" asp-controller="User"
+                               asp-action="List" asp-route-pageNumber="@next" asp-route-pageSize="@Model.PageSize">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+
+
+        else
+        {
+            <p>No Users found!</p>
+        }
+    </div>
+</div>
+
+
+<!-- Modal -->
+<form method="post">
+    <div class="modal fade" id="ModelForNewUser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Create New User</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input class="form-control" type="text" asp-for="Username" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" type="text" asp-for="Email"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input class="form-control" type="password" asp-for="Password"/>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <label class="form-check-label">User</label>
+                        <input type="checkbox" class="form-check-input" checked disabled/>
+                    </div>
+                    @if (User.IsInRole("superadmin"))
+                    {
+                        <div class="mb-3 form-check">
+                            <label class="form-check-label">Admin</label>
+                            <input type="checkbox" class="form-check-input" asp-for="CheckBoxForRole"/>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts{
+    <script>
+        const search =document.getElementById('searchInput');
+        const form =document.getElementById('searchForm');
+
+        async function SearchThevalue(){
+            //form.submit();
+            if(this.value.trim() ===''){
+                form.submit();
+            }
+            // else if(this.value.trim() !==''){
+            //     form.submit();
+            // }
+        }
+
+        search.addEventListener('input', SearchThevalue);
+    </script>
+}

@@ -10,15 +10,18 @@
 				
 				<div class="mb-3">
 					<label class="form-label">UserName</label>
-					<input class="form-control" id="username" type="text" asp-for="Username"/>
+					<input class="form-control" id="username" type="text" asp-for="Username" required/>
+					<span class="text-danger" asp-validation-for="Username"></span>
 				</div>
 				<div class="mb-3">
 					<label class="form-label">Email</label>
-					<input class="form-control" id="email" type="email" asp-for="Email"/>
+					<input class="form-control" id="email" type="email" asp-for="Email" required />
+					<span class="text-danger" asp-validation-for="Email"></span>
 				</div>
 				<div class="mb-3">
 					<label class="form-label">Password</label>
-					<input class="form-control" id="password" type="password" asp-for="Password"/>
+					<input class="form-control" id="password" type="password" asp-for="Password" required minlength="6"/>
+					<span class="text-danger" asp-validation-for="Password"></span>
 				</div>
 				<div class="mb-3">
 					<button class="btn d-flex btn-dark">Register</button>

@@ -10,12 +10,14 @@
 				<h1 class="mt-3 mb-3 h3">Login</h1>
 				<div class="mb-3">
 				<label class="form-label">Username</label>
-				<input class="form-control" type="text" id="username" asp-for="Username"/>
+				<input class="form-control" type="text" id="username" asp-for="Username" required/>
+				<span class="text-danger" asp-validation-for="Username"></span>
 				</div>
 
 				<div class="mb-3">
 					<label class="form-label">Password</label>
-					<input class="form-control" type="password" id="passwword" asp-for="Password"/>
+					<input class="form-control" type="password" id="passwword" asp-for="Password" required minlength="6"/>
+					<span class="text-danger" asp-validation-for="Password"></span>
 				</div>
 				<div class="mb-3">
 					<button class="btn btn-dark text-light">Login</button>

@@ -20,6 +20,11 @@ namespace Bloggie.Web.Repositories
             return tag;
         }
 
+        public async Task<int> CountAsync()
+        {
+            return await bloggieDbcontext.Tags.CountAsync();
+        }
+
         public async Task<Tag?> DeleteAsync(Guid id)
         {
             var tag = await bloggieDbcontext.Tags.FindAsync(id);
@@ -33,9 +38,36 @@ namespace Bloggie.Web.Repositories
 
         }
 
-        public async Task<IEnumerable<Tag>> GetAllAsync()
+        public async Task<IEnumerable<Tag>> GetAllAsync(string? searchQuery, string? sortBy, string? sortingField
+            ,int pageNumber =1,int pageSize = 100)
         {
-            return await bloggieDbcontext.Tags.ToListAsync();
+            var tags = await bloggieDbcontext.Tags.ToListAsync();
+            var search = tags.AsEnumerable();
+
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                search = search.Where(x=>x.Name.Contains(searchQuery));
+            }
+
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                var isDesc = string.Equals(sortBy, "desc", StringComparison.OrdinalIgnoreCase);
+
+                if(string.Equals(sortingField, "Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    search = isDesc ? search.OrderByDescending(x => x.Name) : search.OrderBy(x=>x.Name);
+                }
+                if(string.Equals(sortingField,"DisplayName",StringComparison.OrdinalIgnoreCase))
+                {
+                    search = isDesc ? search.OrderByDescending(x=>x.DisplayName) : search.OrderBy(x=>x.DisplayName);
+                }
+            }
+
+            search = search.Skip((pageNumber-1) * pageSize).Take(pageSize);
+
+            tags = search.ToList();
+
+            return tags;
         }
 
         public async Task<Tag?> GetAsync(Guid id)

@@ -24,25 +24,32 @@ namespace Bloggie.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel registerModel)
         {
-            var identityUser = new IdentityUser
+            if (ModelState.IsValid)
             {
-                UserName = registerModel.Username,
-                Email = registerModel.Email,
-            };
-            var identityResult = await userManager.CreateAsync(identityUser, registerModel.Password);
-            
-            if(identityResult.Succeeded)
-            {
-                var identityUserRole = await userManager.AddToRoleAsync(identityUser, "user");
-
-                if(identityUserRole.Succeeded)
+                var identityUser = new IdentityUser
                 {
-                    return RedirectToAction("Register");
-                }
-                
-            }
+                    UserName = registerModel.Username,
+                    Email = registerModel.Email,
+                };
+                var identityResult = await userManager.CreateAsync(identityUser, registerModel.Password);
 
-            return View();
+                if (identityResult.Succeeded)
+                {
+                    var identityUserRole = await userManager.AddToRoleAsync(identityUser, "user");
+
+                    if (identityUserRole.Succeeded)
+                    {
+                        return RedirectToAction("Register");
+                    }
+
+                }
+
+                return View();
+            }
+            else
+            {
+                return View();
+            }
         }
 
         [HttpGet]
@@ -59,6 +66,10 @@ namespace Bloggie.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel loginModel)
         {
+            if(!ModelState.IsValid)
+            {
+                return View();
+            }
             var signIn = await signInManager.PasswordSignInAsync(loginModel.Username, loginModel.Password,false,false);
 
             if (signIn.Succeeded && signIn!= null)
